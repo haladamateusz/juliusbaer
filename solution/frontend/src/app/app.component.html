@@ -1,0 +1,216 @@
+<nav class="navbar navbar-light">
+  <div class="ms-2 d-flex align-items-center">
+    <img ngSrc="logo.svg" width="50" height="50" alt="D" />
+    <span class="ms-2">ETECTOR T1000</span>
+  </div>
+</nav>
+<div class="container position-relative h-100">
+  <div class="row mt-1">
+    <div class="col-sm-10 offset-sm-1">
+      <div class="card mt-4">
+        <div class="card-body ps-3 pt-4">
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="mb-3 ms-3 mt-1 d-flex align-items-center">
+                <img ngSrc="snifsnif.svg" width="40" height="40" alt="" />
+                <h3 class="ms-2 mb-0">Deep Fake Sniffer</h3>
+              </div>
+            </div>
+
+            <div class="col-sm-4 text-end">
+              @if (processingFinished) {
+                <div
+                  class="mb-3 p-2 ms-3 mt-1 d-flex align-items-center justify-content-center rounded-4"
+                >
+                  <img ngSrc="whereismybrainrn.svg" width="40" height="40" alt="" />
+                  <h5 class="ms-2 mb-0">Emotions: Neutral</h5>
+                </div>
+              }
+            </div>
+
+            @if (confidence > 0) {
+              <div class="col-sm-4">
+                <div
+                  class="mb-3 p-2 ms-3 mt-1 d-flex align-items-center justify-content-center rounded-4 confidence"
+                  [ngClass]="{
+                    confidence: !processingFinished,
+                    'confidence-valid': confidence >= 52 && processingFinished,
+                    'confidence-invalid': confidence < 52 && processingFinished
+                  }"
+                >
+                  <img ngSrc="shield.svg" width="40" height="40" alt="" />
+                  <h5 class="ms-2 mb-0">Confidence {{ confidence }}%</h5>
+                </div>
+              </div>
+            }
+
+            <div class="col-sm-12">
+              <div class="w-100" #canvasWrapper>
+                <canvas id="canvas"></canvas>
+                <audio id="audio"></audio>
+                <audio id="audio2"></audio>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-3 d-flex flex-row justify-content-between">
+            <div class="d-inline-flex align-items-center">
+              @if (deepFakeCheckStatus === 'unknown') {
+                <div
+                  class="spinner-border mb-1 spinner-border-sm text-secondary"
+                  role="status"
+                ></div>
+              } @else if (deepFakeCheckStatus === 'valid') {
+                <img class="mb-2" ngSrc="checkmark.svg" width="30" height="30" alt="" />
+              } @else if (deepFakeCheckStatus === 'invalid') {
+                <img class="mb-2" ngSrc="alert.svg" width="30" height="30" alt="" />
+              }
+              <h5 class="mb-2 ms-2">
+                Deepfake check
+                @if (deepFakeCheckStatus === 'valid') {
+                  passed
+                }
+              </h5>
+            </div>
+            <div class="d-inline-flex align-items-center">
+              @if (impersonatorCheckStatus === 'unknown') {
+                <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+              } @else if (impersonatorCheckStatus === 'valid') {
+                <img class="mb-2" ngSrc="checkmark.svg" width="30" height="30" alt="" />
+              } @else if (impersonatorCheckStatus === 'invalid') {
+                <img class="mb-2" ngSrc="alert.svg" width="30" height="30" alt="" />
+              }
+              <h5 class="mb-1 ms-2">
+                Impersonator check
+                @if (impersonatorCheckStatus === 'valid') {
+                  passed
+                }
+              </h5>
+            </div>
+
+            <div class="d-inline-flex align-items-center">
+              @if (clientIndetificationCheckStatus === 'unknown') {
+                <div
+                  class="mb-2 spinner-border spinner-border-sm text-secondary"
+                  role="status"
+                ></div>
+              } @else if (clientIndetificationCheckStatus === 'valid') {
+                <img class="mb-1" ngSrc="checkmark.svg" width="30" height="30" alt="" />
+              } @else if (clientIndetificationCheckStatus === 'invalid') {
+                <img class="mb-1" ngSrc="alert.svg" width="30" height="30" alt="" />
+              }
+              <h5 class="mb-1 ms-2">
+                Client identification check
+                @if (clientIndetificationCheckStatus === 'valid') {
+                  passed
+                }
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-1">
+    <div class="col-sm-6 mt-4">
+      <div class="card h-100">
+        <div class="card-body ps-4 pt-4">
+          <h4 class="mb-3 mt-1 d-flex align-items-center">
+            <img ngSrc="transcript.svg" width="35" height="35" alt="" />
+            <span class="ms-2">Transcript</span>
+          </h4>
+          @if (textInput$ | async; as textInput) {
+            @for (word of textInput; track $index) {
+              @if (checkImportantData(word)) {
+                <span class="bg-warning line-height">{{ word }} </span>
+              } @else {
+                <span class="line-height">{{ word }} </span>
+              }
+            }
+          }
+          @if (isEmitting) {
+            <div class="blinking d-inline-block"></div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 mt-4">
+      <div class="card h-100 mb-4">
+        <div class="card-body ps-3 pt-4">
+          <h4 class="mb-3 ms-3 mt-1 d-flex align-items-center">
+            <img ngSrc="contact_info.svg" width="40" height="40" alt="" />
+            <span class="ms-2">Client Information</span>
+          </h4>
+          @if (clientNameAuthenticated) {
+            <div class="row">
+              <div class="col-sm-5 ps-4">
+                <h4>{{ dataName.name }}</h4>
+                <h5 class="text-secondary">{{ dataName.profession }}</h5>
+              </div>
+              <div class="col-sm-1">
+                @if (dataName.validityStatus === 'valid') {
+                  <img ngSrc="checkmark.svg" width="30" height="30" alt="" />
+                } @else if (dataName.validityStatus === 'invalid') {
+                  <img ngSrc="alert.svg" width="30" height="30" alt="" />
+                }
+              </div>
+              <div class="row mt-4">
+                @for (field of dataFields; track field.name; let index = $index) {
+                  @if (index % 2 === 0) {
+                    <div class="col-sm-5 ps-4">
+                      <h6 class="mb-1 text-secondary">{{ field.name }}</h6>
+                      <h6>{{ field.value }}</h6>
+                    </div>
+                    <div class="col-sm-1">
+                      @if (field.validityStatus === 'valid') {
+                        <img ngSrc="checkmark.svg" width="30" height="30" alt="" />
+                      } @else if (field.validityStatus === 'invalid') {
+                        <img ngSrc="alert.svg" width="30" height="30" alt="" />
+                      }
+                    </div>
+                  } @else {
+                    <div class="col-sm-5">
+                      <h6 class="mb-1 text-secondary">{{ field.name }}</h6>
+                      <h6>{{ field.value }}</h6>
+                    </div>
+                    <div class="col-sm-1">
+                      @if (field.validityStatus === 'valid') {
+                        <img ngSrc="checkmark.svg" width="30" height="30" alt="" />
+                      } @else if (field.validityStatus === 'invalid') {
+                        <img ngSrc="alert.svg" width="30" height="30" alt="" />
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          } @else {
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border text-secondary" role="status"></div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="position-absolute top-85 w-35 start-50 translate-middle">
+    <div class="rounded-4 bg-white py-3 shadow-lg">
+      <div class="row">
+        <div class="col-sm-8 d-flex align-items-center">
+          <h5 class="px-4 py-2 mb-0 text-secondary">
+            +41 76 696 24 69
+            @if (callDuration$ | async; as callDuration) {
+              ({{ callDuration * 1000 | date: 'mm:ss' }})
+            }
+          </h5>
+        </div>
+        <div class="col-sm-4 d-flex align-items-center">
+          <img class="mx-1" ngSrc="pause_call.svg" width="50" height="50" alt="" />
+          <img class="mx-1" ngSrc="stop_call.svg" width="50" height="50" alt="" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

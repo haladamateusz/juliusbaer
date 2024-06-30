@@ -1,0 +1,60 @@
+:host {
+  height: 100%;
+}
+
+.navbar {
+  font-weight: 400;
+  font-size: 28px;
+  color: #0c1755;
+}
+
+.card {
+  border: none;
+
+  .card-body {
+    border-radius: 25px;
+    background-color: #f4f4f4;
+  }
+}
+
+.blinking {
+  width: 4px;
+  height: 14px;
+  animation: blinking 0.5s infinite;
+}
+
+@keyframes blinking {
+  0% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: #000;
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+
+.w-35 {
+  width: 35% !important;
+}
+
+.top-85 {
+  top: 87% !important;
+}
+
+.confidence {
+  background: #e0e0e0;
+}
+
+.confidence-valid {
+  background: #b2fab2;
+}
+
+.confidence-invalid {
+  background: #ff9fb1;
+}
+
+.line-height {
+  line-height: 2;
+}
